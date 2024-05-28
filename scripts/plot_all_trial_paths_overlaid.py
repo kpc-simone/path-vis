@@ -1,4 +1,4 @@
-# extract_path_timeseries_features.py
+# plot_all_trial_paths_overlaid.py
 
 from tkinter.filedialog import askdirectory,askopenfilename
 import matplotlib.pyplot as plt
@@ -8,7 +8,6 @@ import sys,os
 
 sys.path.insert(0,os.path.join(os.path.dirname(__file__),'../src'))
 from visualization import behavior_colors, draw_box, arena, shelter
-
 
 '''
 This script extracts a single timeseries feature from each path associated with an experiment, 

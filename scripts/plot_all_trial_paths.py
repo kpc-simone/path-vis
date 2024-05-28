@@ -7,7 +7,7 @@ import argparse
 import math
 
 import sys,os
-sys.path.append(os.path.join(os.path.dirname(__file__),'../annotator/src'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../src'))
 from visualization import behavior_colors, draw_box
 
 ### SCRIPT PARAMETERS ###
@@ -89,5 +89,5 @@ if __name__ == '__main__':
 
     ### SAVE THE FIGURE(S) ###
     print('Figures are saved in: analysis-scripts/figs')
-    plt.savefig(f'figs/all-trial-paths-{args.phenotype}-{args.figname_modifier}.pdf', format='pdf')
+    plt.savefig(f'../figs/all-trial-paths-{args.phenotype}-{args.figname_modifier}.pdf', format='pdf')
     plt.show()

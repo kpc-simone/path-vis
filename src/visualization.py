@@ -3,6 +3,21 @@ import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import sys,os
 
+arena = {
+    'xmin'      : -0.15,
+    'ymin'      : 0,
+    'width'     : 0.3,
+    'height'    : 0.5,
+}
+
+shelter = {
+    'xmin'      : -0.15,
+    'ymin'      : 0,
+    'width'     : 0.160,
+    'height'    : 0.120,
+}
+
+
 def draw_box(ax,bb):
 
     # a fancy box with round corners. pad=0.1

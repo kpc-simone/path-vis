@@ -1,4 +1,4 @@
-phenotype,animal,histology,trial,outcome,shadowON-abs,shadowOFF-abs,beam-break-rel,beam-break-abs
+group,animal,histology,trial,outcome,shadowON-abs,shadowOFF-abs,beam-break-rel,beam-break-abs
 crh,m8,ok,1,attempt,242.2953797,250.1953797,6.859,249.1543797
 crh,m8,ok,2,attempt,307.2634251,315.1634251,4.623,311.8864251
 crh,m8,ok,3,escape,386.3462539,394.2462539,4.496,390.8422539

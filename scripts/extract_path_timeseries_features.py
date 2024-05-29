@@ -53,6 +53,7 @@ parser.add_argument( '--group', type = str, default = 'all' )
 parser.add_argument( '--outcome', type = str, default = 'all' )
 
 parser.add_argument( '--max-dur', type = float, default = 10.0 )
+parser.add_argument( '--figure-format', type = str, default = 'pdf' )
 
 if __name__ == '__main__':
     args = parser.parse_args()
@@ -103,7 +104,7 @@ if __name__ == '__main__':
         except:
             print(f'WARNING: No path for trial {trial}, animal {animal}')
      
-    fig,ax = plt.subplots(1,1, figsize=(4.,4.))
+    fig,ax = plt.subplots(1,1, figsize=(6.,4.))
     ax.plot( df_out['time'], df_out.iloc[:,1:], color = 'silver', linewidth = 0.2 )
     ax.plot( df_out['time'], df_out.iloc[:,1:].mean(axis=1), color = 'dimgray' )
     ax.set_ylabel(args.feature)
@@ -112,6 +113,12 @@ if __name__ == '__main__':
     
     for spine in ['top','right']:
         ax.spines[spine].set_visible(False)
+        
+    fig.tight_layout()
+    
+    print('Figure saved in: figs')
+    figname = f'{args.feature}-alignedto_{args.align_to}_{args.group}-trial_{args.trial}-outcome_{args.outcome}.{args.figure_format}'
+    plt.savefig( os.path.join('../figs',figname), format = args.figure_format )
     plt.show()
     
     df_out.to_csv( os.path.join(out_dir,f'{args.feature}-alignedto_{args.align_to}_{args.group}-trial_{args.trial}-outcome_{args.outcome}.csv' ) )

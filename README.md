@@ -27,3 +27,13 @@ Leave out optional arguments to include all categories for that feature. For exa
 python plot_all_trial_paths_overlaid.py --trial 1
 ```
 Will plot all paths elicited in trial 1, associated with any outcome and any group. 
+
+
+### 2. Align timeseries data to an experimental time point
+```
+python extract_path_timeseries_features.py --feature c-speed --align-to beam-break-rel --outcome escape
+```
+Will plot the speed of the centroid object over time, aligned to beam-break time, for all trials associated with an escape.
+
+![](https://github.com/kpc-simone/path-vis/blob/main/docs/c-speed-alignedto_beam-break-rel_all-trial_all-outcome_escape.png)
+

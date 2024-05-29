@@ -1,3 +1,23 @@
+# path-vis: Visualization tools for the path annotator
+
+This is a companion repository containing a collection of visualization scripts for working with data from the the path-annotator tool.
+
+Scripts Included:
+
+- [x] Plot overlay of paths (completed)
+	- [x] Optionally exclude pre-/post-shadow annotations
+- [ ] Align timeseries features to arbitrary time point (in progress)
+	- [x] Low-level timeseries features: position, speed, acceleration
+	- [x] Export aligned data to csv
+	- [ ] High-level timeseries features:
+		- [ ] Shelter heading error
+		- [ ] Shelter distance
+		- [ ] In danger zone
+- [ ] Extract summary features from paths (planned)	
+- [ ] Advanced visualizations (planned)
+	- [ ] Heading error histograms
+	- [ ] Heatmaps
+	
 # Installation
 
 Prerequisites: Anaconda

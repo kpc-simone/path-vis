@@ -56,7 +56,7 @@ if __name__ == '__main__':
         ecdf = ecdf[ecdf['group'] == args.group ]
     if args.trial != 'all':
         ecdf = ecdf[ecdf['trial'] == int(args.trial) ]
-    if args.outcome != 'outcome':
+    if args.outcome != 'all':
         ecdf = ecdf[ecdf['outcome'] == args.outcome ]
         
     path_files = [ f for f in os.listdir(paths_dir) if '.csv' in f ]

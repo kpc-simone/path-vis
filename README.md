@@ -6,13 +6,13 @@ Scripts Included:
 
 - [x] Plot overlay of paths (completed)
 	- [x] Optionally exclude pre-/post-shadow annotations
-- [ ] Align timeseries features to arbitrary time point (in progress)
+- [x] Align timeseries features to arbitrary time point (completed)
 	- [x] Low-level timeseries features: position, speed, acceleration
 	- [x] Export aligned data to csv
-	- [ ] High-level timeseries features:
-		- [ ] Shelter heading error
-		- [ ] Shelter distance
-		- [ ] In danger zone
+	- [x] High-level timeseries features:
+		- [x] Shelter heading error (heading-error)
+		- [x] Shelter distance (sh-dist)
+		- [x] In danger zone (in-danger-zone)
 - [ ] Extract summary features from paths (planned)	
 - [ ] Advanced visualizations (planned)
 	- [ ] Heading error histograms

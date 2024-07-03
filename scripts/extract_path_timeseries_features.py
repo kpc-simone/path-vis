@@ -8,6 +8,9 @@ import numpy as np
 import argparse
 import sys,os
 
+sys.path.insert(0,'../src')
+from traj_utils import *
+
 '''
 This script extracts a single timeseries feature from each path associated with an experiment, 
 aligns that feature to a user-specified timepoint, and then merges the results into a new csv file.
@@ -36,8 +39,7 @@ out_dir = askdirectory( title = "Select folder to save the processed data" )
 
 parser = argparse.ArgumentParser()
 parser.add_argument( '--feature', type = str, default = 'c-speed' )
-valid_features = ['n-xpos','n-ypos','t-xpos','c-xpos','c-ypos','c-xvel','c-yvel','c-xacc','c-speed','c-scacc','a-pos','a-vel']
-# TODO: heading error, shelter distance, in danger zone
+valid_features = ['n-xpos','n-ypos','t-xpos','c-xpos','c-ypos','c-xvel','c-yvel','c-xacc','c-speed','c-scacc','a-pos','a-vel','heading-error','sh-dist','danger-zone']
 
 parser.add_argument( '--align-to', type = str, default = 'shadowON-rel' )
 valid_alignments = ['shadowON-rel','beam-break-rel']
@@ -54,6 +56,7 @@ parser.add_argument( '--outcome', type = str, default = 'all' )
 
 parser.add_argument( '--max-dur', type = float, default = 10.0 )
 parser.add_argument( '--figure-format', type = str, default = 'pdf' )
+parser.add_argument( '--plot-each', type = bool, default = True )
 
 if __name__ == '__main__':
     args = parser.parse_args()
@@ -81,13 +84,15 @@ if __name__ == '__main__':
         trial = row['trial']
         group = row['group']
         outcome = row['outcome']
+        print(animal,trial,group,outcome)
         
         colstr = f'{group}-{animal}-t{trial}-{outcome}'
         
         try:
-        #if True:
             path_file = [ f for f in path_files if f'-t{trial}-' in f and f'-{animal}-' in f ][0]
             trdf = pd.read_csv( os.path.join(paths_dir,path_file), index_col = 0 )
+            trdf = get_derivatives(trdf,plot_each = args.plot_each)
+            
             if args.align_to == 'shadowON-rel':
                 pass
             elif args.align_to == 'beam-break-rel':
@@ -102,7 +107,7 @@ if __name__ == '__main__':
             df_out.loc[idxs_new,colstr] = trdf[args.feature]
             
         except:
-            print(f'WARNING: No path for trial {trial}, animal {animal}')
+            print(f'WARNING: Skipped path for trial {trial}, animal {animal}')
      
     fig,ax = plt.subplots(1,1, figsize=(6.,4.))
     ax.plot( df_out['time'], df_out.iloc[:,1:], color = 'silver', linewidth = 0.2 )

@@ -34,6 +34,7 @@ behavior_colors = {
     'attempt'       : '#c97330',    
     'freeze'	    : '#27c687',
 	'no response'	: '#b3b3b3',
+    'nr'            : '#b3b3b3',
     'mistrial'      : 'white',
 	'rear'          : '#fde725',    
     'hide'          : '#675159',

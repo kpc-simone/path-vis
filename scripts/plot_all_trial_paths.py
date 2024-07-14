@@ -1,4 +1,4 @@
-from tkinter.filedialog import askdirectory
+from tkinter.filedialog import askdirectory,askopenfilename
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 from scipy import signal
@@ -25,9 +25,8 @@ shelter = {
     'height'    : 0.120,
 }
 
-
 parser = argparse.ArgumentParser()
-parser.add_argument( '--phenotype', required = True )
+parser.add_argument( '--group', required = True )
 parser.add_argument( '--figname-modifier', type = str, default = '' )
 
 if __name__ == '__main__':
@@ -35,20 +34,24 @@ if __name__ == '__main__':
         
     ### LOAD THE DATA ###
     trajectories_folder = askdirectory( title = "Select folder containing path annotations" )    
+    ecdf = pd.read_csv( askopenfilename( title = "Select experimental conditions and key timings file" ) )
 
     ### PRE-PROCESS THE DATA ###
     animals = []    
     tmax = 1
     for trajectory_file in os.listdir(trajectories_folder):
-        trajectory_info = trajectory_file[:-4].split('-')
-        phenotype_ = trajectory_info[0]
-        sex = trajectory_info[1]
-        animal = trajectory_info[2]
-        trial = int(trajectory_info[-2].strip('t'))
-        if trial > tmax:
-            tmax = trial
-        
-        if phenotype_ == args.phenotype:
+
+        idx0 = trajectory_file.find(args.group)
+        if idx0 >= 0:
+            idx1 = idx0 + len(args.group) +1
+            print(idx1)
+            trajectory_info = trajectory_file[idx1:-4].split('-')
+            sex = trajectory_info[0]
+            animal = trajectory_info[1]
+            trial = int(trajectory_info[-2].strip('t'))
+            if trial > tmax:
+                tmax = trial
+
             if animal not in animals:
                 if sex == 'M':
                     animals.insert(0,animal)
@@ -65,8 +68,11 @@ if __name__ == '__main__':
                 if (f'-{animal}-' in trajectory_file) & (f'-t{trial}-' in trajectory_file):
                     tdf = pd.read_csv(os.path.join(trajectories_folder,trajectory_file))
                     trajectory_info = trajectory_file[:-4].split('-')
-                    sex = trajectory_info[1]
-                    outcome = trajectory_info[5].lower()
+                    
+                    # get the sex and the outcome from the ecdf file instead
+                    sub_ecdf = ecdf[ (ecdf['animal'] == animal) & (ecdf['trial'] == trial) ].reset_index(drop=True)
+                    sex = sub_ecdf['sex'].iloc[0]
+                    outcome = sub_ecdf['outcome'].iloc[0]
                     
                     axes[a,t].plot(tdf['c-xpos'],tdf['c-ypos'],color=behavior_colors[outcome],linewidth=1.5,alpha=0.5)
             if t == 0:
@@ -89,5 +95,5 @@ if __name__ == '__main__':
 
     ### SAVE THE FIGURE(S) ###
     print('Figures are saved in: analysis-scripts/figs')
-    plt.savefig(f'../figs/all-trial-paths-{args.phenotype}-{args.figname_modifier}.pdf', format='pdf')
+    plt.savefig(f'../figs/all-trial-paths-{args.group}-{args.figname_modifier}.pdf', format='pdf')
     plt.show()

@@ -8,6 +8,8 @@ import numpy as np
 import argparse
 import sys,os
 
+from scipy.interpolate import interp1d
+
 sys.path.insert(0,'../src')
 from traj_utils import *
 
@@ -39,7 +41,7 @@ out_dir = askdirectory( title = "Select folder to save the processed data" )
 
 parser = argparse.ArgumentParser()
 parser.add_argument( '--feature', type = str, default = 'c-speed' )
-valid_features = ['n-xpos','n-ypos','t-xpos','c-xpos','c-ypos','c-xvel','c-yvel','c-xacc','c-speed','c-scacc','a-pos','a-vel','heading-error','sh-dist','danger-zone']
+valid_features = ['n-xpos','n-ypos','t-xpos','c-xpos','c-ypos','c-xvel','c-yvel','c-xacc','c-speed','c-scacc','a-pos','a-vel','heading-error','sh-dist','in-danger-zone', 'heading-error-abs']
 
 parser.add_argument( '--align-to', type = str, default = 'shadowON-rel' )
 valid_alignments = ['shadowON-rel','beam-break-rel']
@@ -48,6 +50,7 @@ valid_alignments = ['shadowON-rel','beam-break-rel']
 # customization
 parser.add_argument( '--shadow-dur', type = float, default = 8.0 )
 parser.add_argument( '--time-col-name', type = str, default = 'time' )
+parser.add_argument( '--fps', type = int, default = 20 )
 
 # constrain export if desired
 parser.add_argument( '--trial', type = str, default = 'all' )
@@ -70,41 +73,56 @@ if __name__ == '__main__':
     if args.trial != 'all':
         ecdf = ecdf[ecdf['trial'] == int(args.trial) ]
     if args.outcome != 'all':
-        ecdf = ecdf[ecdf['outcome'] == args.outcome ]
+        ecdf = ecdf[ecdf['outcome'].str.lower() == args.outcome.lower() ]
 
     path_files = [ f for f in os.listdir(paths_dir) if '.csv' in f ]
-    ts = pd.read_csv( os.path.join(paths_dir,path_files[0]), index_col = 0 )[args.time_col_name]
-    
-    fps = 1 / np.mean( ts.diff() )
-    ts_common = np.linspace( -args.max_dur, args.max_dur, int(np.ceil( 2*args.max_dur * fps )), endpoint = True )
+    ts_common = np.linspace( -args.max_dur, args.max_dur, int(np.ceil( 2*args.max_dur * args.fps )), endpoint = True )
     
     df_out = pd.DataFrame( data = { 'time' : ts_common } )
+    #print(df_out.head())
+    #print(df_out.tail())
     for r,row in ecdf.iterrows():
         animal = row['animal']
         trial = row['trial']
         group = row['group']
         outcome = row['outcome']
-        print(animal,trial,group,outcome)
+        #print(animal,trial,group,outcome)
         
         colstr = f'{group}-{animal}-t{trial}-{outcome}'
         
         try:
+        #if True:
             path_file = [ f for f in path_files if f'-t{trial}-' in f and f'-{animal}-' in f ][0]
             trdf = pd.read_csv( os.path.join(paths_dir,path_file), index_col = 0 )
             trdf = get_derivatives(trdf,plot_each = args.plot_each)
+            #print(animal, trial, 'fps: ', 1 / np.mean( trdf[args.time_col_name].diff() ) )
             
+            # resample timeseries here
+            ts = trdf[args.time_col_name]
+            ys = trdf[args.feature]
+            ys_func = interp1d( ts, ys )
+            
+            ts_res = np.linspace( ts.min(), ts.max(), int(np.ceil( (ts.max() - ts.min())* args.fps )), endpoint = True )
+            ys_res = ys_func( ts_res )
+            
+            # identify the time indices in the new dataframe
             if args.align_to == 'shadowON-rel':
                 pass
             elif args.align_to == 'beam-break-rel':
-                trdf[args.time_col_name] = trdf[args.time_col_name] - row['beam-break-rel']
+                ts_res = ts_res - row['beam-break-rel']
+            tpre = ts_res.min()
                 
-            tpre = trdf[args.time_col_name].min()
+            #print(tpre)
             idx0 = np.argmin( [ np.abs( t - tpre ) for t in df_out['time'].values ] ) 
-            idxs_new = np.arange(idx0,idx0+trdf.shape[0])
-            trdf.index = idxs_new
+            idxs_new = np.arange(idx0,idx0+len(ts_res) )
+
+            tmp = pd.DataFrame( data = { 'ys-res' : ys_res },
+                                        index = idxs_new 
+                                        )
             
             df_out[colstr] = np.nan
-            df_out.loc[idxs_new,colstr] = trdf[args.feature]
+            df_out.loc[idxs_new,colstr] = tmp['ys-res']
+            #print(df_out.sample())
             
         except:
             print(f'WARNING: Skipped path for trial {trial}, animal {animal}')

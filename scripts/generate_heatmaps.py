@@ -75,9 +75,11 @@ if __name__ == '__main__':
             ticks = [0.,0.2,0.4,0.6,0.8,1.0]
             cbar = fig.colorbar(im, cax = cax, ticks=ticks,orientation='vertical',extend='max')  
             cbar.set_label('Seconds',va='top',ha='left',rotation=90,in_layout=True)
-            cbar.ax.set_yticklabels( [int(t) for t in ticks] )
+            cbar.ax.set_yticklabels( [ t for t in ticks] )
             # todo add title
             ax.set_title(f'{group}-{animal}-{trial}')
            
             fig.tight_layout()
-            plt.show()
+            plt.savefig(f'../figs/heatmap-{group}-{animal}-{trial}.pdf',format='pdf')
+            plt.close()
+            #plt.show()

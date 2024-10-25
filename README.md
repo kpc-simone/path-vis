@@ -13,7 +13,7 @@ Scripts Included:
 		- [x] Shelter heading error (heading-error)
 		- [x] Shelter distance (sh-dist)
 		- [x] In danger zone (in-danger-zone)
-- [ ] Extract summary features from paths (planned)	
+- [x] Extract summary features from paths
 - [ ] Advanced visualizations (planned)
 	- [ ] Heading error histograms
 	- [ ] Heatmaps
